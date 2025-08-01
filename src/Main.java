@@ -2,6 +2,13 @@
 import java.awt.*;
 import java.net.URL;
 import javax.swing.ImageIcon;
+import javazoom.jl.player.Player;
+import java.io.FileInputStream;
+import java.util.Arrays;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.URL;
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,34 +18,25 @@ public class Main {
 
         }
 
+        MyRunnable myRunnable = new MyRunnable();
+        Thread thread = new Thread(myRunnable);
+
+
+
         final PopupMenu popup = new PopupMenu();
         final TrayIcon trayIcon =
-                new TrayIcon(createImage("images/mikuicon.png", "tray icon"));
+                new TrayIcon(createImage("images/mikuicon.png", "Miku Beam Icon"));
         final SystemTray tray = SystemTray.getSystemTray();
 
         trayIcon.setImageAutoSize(true);
 
-        MenuItem aboutItem = new MenuItem("About");
-        CheckboxMenuItem cb1 = new CheckboxMenuItem("Set auto size");
-        CheckboxMenuItem cb2 = new CheckboxMenuItem("Set tooltip");
-        Menu displayMenu = new Menu("Display");
-        MenuItem errorItem = new MenuItem("Error");
-        MenuItem warningItem = new MenuItem("Warning");
-        MenuItem infoItem = new MenuItem("Info");
-        MenuItem noneItem = new MenuItem("None");
-        MenuItem exitItem = new MenuItem("Exit");
+        MenuItem beambutton = new MenuItem("Ready?");
+        Menu displayMenu = new Menu("Settings");
 
-        popup.add(aboutItem);
-        popup.addSeparator();
-        popup.add(cb1);
-        popup.add(cb2);
+        popup.add(beambutton);
         popup.addSeparator();
         popup.add(displayMenu);
-        displayMenu.add(errorItem);
-        displayMenu.add(warningItem);
-        displayMenu.add(infoItem);
-        displayMenu.add(noneItem);
-        popup.add(exitItem);
+
 
         trayIcon.setPopupMenu(popup);
 
@@ -47,14 +45,20 @@ public class Main {
         } catch (AWTException e) {
             System.out.println("TrayIcon could not be added.");
         }
+
+        beambutton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                thread.start();
+                PlayMP3FromResource("/images/mikumikubeam.mp3");
+
+            }
+        });
     }
 
 
 
 
 
-
-    // Helper method to load image from resources
     protected static Image createImage(String path, String description) {
         URL imageURL = Main.class.getResource("/" + path);
         if (imageURL == null) {
@@ -64,5 +68,25 @@ public class Main {
             return (new ImageIcon(imageURL, description)).getImage();
         }
     }
+
+    private static void PlayMP3FromResource(String resourcePath) {
+        new Thread(() -> {
+            try {
+                var resource = Main.class.getResourceAsStream(resourcePath);
+                if (resource == null) {
+                    System.err.println("File not found in resources: " + resourcePath);
+                    return;
+                }
+                Player player = new Player(resource);
+                player.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+
+
 }
+
 
