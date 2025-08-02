@@ -1,5 +1,6 @@
 
 import java.awt.*;
+import java.io.IOException;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javazoom.jl.player.Player;
@@ -48,8 +49,21 @@ public class Main {
 
         beambutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                thread.start();
+
                 PlayMP3FromResource("/images/mikumikubeam.mp3");
+                try {
+                    thread.sleep(10000);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+                ProcessBuilder pb = new ProcessBuilder();
+                try{
+                    pb.start();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
 
             }
         });
