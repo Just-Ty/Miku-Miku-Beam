@@ -10,6 +10,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 import javax.swing.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -21,6 +28,7 @@ public class Main {
 
         MyRunnable myRunnable = new MyRunnable();
         Thread thread = new Thread(myRunnable);
+
 
 
 
@@ -50,19 +58,36 @@ public class Main {
         beambutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                PlayMP3FromResource("/images/mikumikubeam.mp3");
-                try {
-                    thread.sleep(10000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-                ProcessBuilder pb = new ProcessBuilder();
-                try{
-                    pb.start();
+                new bgFrame().setVisible(true);
+                new Thread(()->{
+                    PlayMP3FromResource("/images/mikumikubeam.mp3");
+                    try {
+                        Thread.sleep(10000);
+                        for (int i = 0; i < 20; i++) {
+                            new Thread(() -> {
+                                try {
+                                    new ProcessBuilder("cmd.exe", "/c", "start", "Watch LOTM", "/max", "cmd.exe", "/k", "echo MIKU MIKU BEAMMMMMMMM").start();
+                                } catch (IOException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }).start();
 
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+
+                            try {
+                                new ProcessBuilder("cmd.exe", "/k", "echo. > \"%userprofile%\\Desktop\\watch lotm.txt").start();
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+
+
+
+                        }
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }).start();
+
 
 
             }
@@ -98,8 +123,6 @@ public class Main {
             }
         }).start();
     }
-
-
 
 }
 
